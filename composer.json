@@ -1,0 +1,37 @@
+{
+  "name": "aaugustyniak/phpexcelhandler",
+  "type": "library",
+  "description": "Handy php-excel wrapper classes",
+  "keywords": [
+    "excel",
+    "writer",
+    "editor",
+    "cartesian",
+    "pdf"
+  ],
+  "homepage": "https://github.com/artur-augustyniak/PhpExcelHandler",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Artur Augustyniak",
+      "email": "artur@aaugustyniak.pl",
+      "homepage": "https://github.com/artur-augustyniak",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "symfony/http-foundation": "v2.4.0",
+    "irongit/symfony2-stream-response": "v1.0",
+    "phpoffice/phpexcel": "1.7.9",
+    "slam/tcpdf": "6.0.052"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~3.7",
+    "mockery/mockery": "0.9.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Aaugustyniak\\PhpExcelHandler\\": "src"
+    }
+  }
+}

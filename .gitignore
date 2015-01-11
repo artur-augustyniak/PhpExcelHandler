@@ -1,0 +1,7 @@
+.idea
+netbeans
+vendor
+composer.phar
+composer.lock
+
+

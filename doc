@@ -1,0 +1,68 @@
+h1. Xlsx Pdf DocumentWriter
+
+Umieszczenie danych pochodzących z dowolnego obiektu  na arkuszu eksportowanym do xlsx lub pdf.
+
+W Common bundle dostępna jest klasa abstrakcyjna:
+
+<pre>
+namespace \CommonBundle\Services;
+…
+abstract class DocumentWriter extends ContainerAware
+</pre>
+
+Aby tworzyć w/w dokumenty na podstawie podanej encji/obiektu należy dziedzicząc zaimplementować metodę:
+
+<pre>
+  public abstract function writeFromEntity();
+</pre>
+
+
+w której przy pomocy API PHP_Excel oraz pól:
+<pre>
+    protected $activeSheet;
+    protected $entity;
+    protected $phpExcel;
+</pre>
+można umieszaczać dane na arkuszu.
+
+Jeśli przed wygenerowaniem pliku nie podano jawnie zasobu pliku na którym writer ma pisać:
+
+<pre>
+…
+public function setTemplateResource($resourceString)
+…
+</pre>
+
+przy czym $resourceString np.:
+
+<pre>
+$report = $this->getReportEntity($id);
+$file = new ReportDocumentWriter($this->container);
+$file->setTemplateResource("@ReportingBundle/Resources/views/Report/report.xlsx");
+….
+</pre>
+
+writer użyje domyślnego pustego arkusza xlsx :
+<pre>
+@CommonBundle/Resources/views/Default/default.xlsx.
+</pre>
+
+
+Samo użycie w kontrolerze może wyglądac nastepująco:
+
+<pre>
+  $report = $this->getReportEntity($id);
+  $file = new ReportDocumentWriter($this->container);
+  $file->setTemplateResource("@ReportingBundle/Resources/views/Report/report.xlsx");
+  $file->setEntity($report);
+  $file->setWriteAreaRow(16);
+  $fileName = sprintf('Store_report_%s', $report->getDateGenerated()->format('Y-m-d'));
+  $file->setOutputName($fileName);
+  $file->writeFromEntity();
+  $file = $this->getReportDocument($id);
+
+  return $file->generatePdfResponse();
+  lub dla xlsx
+  return $fileObject->generateXlsxResponse();
+
+</pre>
