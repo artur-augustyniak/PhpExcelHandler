@@ -23,12 +23,12 @@
 */
 namespace Aaugustyniak\PhpExcelHandler\Tests\Navigators;
 
+use Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits;
 use \PHPUnit_Framework_TestCase as TestCase;
 use Aaugustyniak\PhpExcelHandler\Navigators\CellNavigator;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
- * @package Aaugustyniak\PhpExcelHandler\Tests\Navigators
  */
 class CellNavigatorTest extends TestCase
 {
@@ -40,7 +40,7 @@ class CellNavigatorTest extends TestCase
         $this->navigator = new CellNavigator();
     }
 
-    public function testCartesianToExcelRowsIDXSequence()
+    public function testIndicesToExcelRowsAddressesSequence()
     {
         $naturalRange = \range(0, 11);
         $actualValues = array();
@@ -52,54 +52,54 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testNegativeCartesianY()
+    public function testNegativeRow()
     {
         $this->navigator->getRowAddressFor(-1);
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testExcelOverflowCartesianY()
+    public function testExcelRowOverflow()
     {
-        $this->navigator->getRowAddressFor(CellNavigator::MAX_EXCEL_2007_ROWS);
+        $this->navigator->getRowAddressFor(ExcelLimits::MAX_EXCEL_2007_ROW+1);
     }
 
-    public function testCartesianToExcelColumnsIDXSequence()
+    public function testIndicesToExcelColumnsAddressesSequence()
     {
-        $naturalRange = \range(0, CellNavigator::MAX_EXCEL_2007_COLUMNS - 1);
+        $naturalRange = \range(0, ExcelLimits::MAX_EXCEL_2007_COLUMN);
         $actualValues = array();
 
         foreach ($naturalRange as $y) {
             $actualValues[] = $this->navigator->getColumnAddressFor($y);
         }
-        $expectedValues = $this->generateExcelColumnsIDXs(0, CellNavigator::MAX_EXCEL_2007_COLUMNS - 1);
+        $expectedValues = $this->generateExcelColumnAddresses(0, ExcelLimits::MAX_EXCEL_2007_COLUMN);
         $this->assertEquals($actualValues, $expectedValues);
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testNegativeCartesianX()
+    public function testNegativeColumn()
     {
         $this->navigator->getColumnAddressFor(-1);
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testExcelOverflowCartesianX()
+    public function testExcelColumnOverflow()
     {
-        $this->navigator->getColumnAddressFor(CellNavigator::MAX_EXCEL_2007_COLUMNS);
+        $this->navigator->getColumnAddressFor(ExcelLimits::MAX_EXCEL_2007_COLUMN+1);
     }
 
-    public function testCartesianToExcelCoordinatesSequence()
+    public function testIndicesToExcelCoordinatesSequence()
     {
         $expectedSequence = array();
         $actualSequence = array();
-        for ($column = 0; $column < CellNavigator::MAX_EXCEL_2007_COLUMNS; $column++) {
+        for ($column = 0; $column <= ExcelLimits::MAX_EXCEL_2007_COLUMN; $column++) {
             $expectedSequence[] = $this->numberToColumnName($column) . 1;
             $actualSequence[] = $this->navigator->getAddressFor($column, 0);
         }
@@ -107,19 +107,19 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testExcelOverflowCartesianXInAddr()
+    public function testExcelColumnOverflowInAddress()
     {
-        $this->navigator->getAddressFor(CellNavigator::MAX_EXCEL_2007_COLUMNS, 0);
+        $this->navigator->getAddressFor(ExcelLimits::MAX_EXCEL_2007_COLUMN+1, 0);
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimitException
+     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
      */
-    public function testExcelOverflowCartesianYInAddr()
+    public function testExcelRowOverflowInAddress()
     {
-        $this->navigator->getAddressFor(0, CellNavigator::MAX_EXCEL_2007_ROWS);
+        $this->navigator->getAddressFor(0, ExcelLimits::MAX_EXCEL_2007_ROW+1);
     }
 
     /**
@@ -129,7 +129,7 @@ class CellNavigatorTest extends TestCase
      * @param $to
      * @return array
      */
-    private function generateExcelColumnsIDXs($from, $to)
+    private function generateExcelColumnAddresses($from, $to)
     {
         $range = array();
         for ($index = $from; $index <= $to; $index++) {
@@ -140,11 +140,12 @@ class CellNavigatorTest extends TestCase
 
     /**
      * Convert column index to excel name
+     * Proper solution for testing eventually more efficient implementations
      *
      * @param $number
      * @return string
      */
-    function numberToColumnName($number)
+    private function numberToColumnName($number)
     {
 
         $number += 1;

@@ -34,13 +34,6 @@ namespace Aaugustyniak\PhpExcelHandler\Navigators;
 class CellNavigator
 {
 
-    /**
-     * Excel limits
-     * @see http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
-     */
-    const MAX_EXCEL_2007_COLUMNS = 16384;
-    const MAX_EXCEL_2007_ROWS = 1048576;
-
     const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 
@@ -63,7 +56,7 @@ class CellNavigator
      *
      * @param $rowIdx
      * @return string
-     * @throws ExcelLimitException
+     * @throws ExcelLimits
      */
     public function getRowAddressFor($rowIdx)
     {
@@ -77,7 +70,7 @@ class CellNavigator
      *
      * @param $columnIdx
      * @return string
-     * @throws ExcelLimitException
+     * @throws ExcelLimits
      */
     public function getColumnAddressFor($columnIdx)
     {
@@ -106,31 +99,29 @@ class CellNavigator
 
     /**
      * Validate excel row limit
-     * @see http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
      *
      * @param $rowIdx
-     * @throws ExcelLimitException
+     * @throws ExcelLimits
      */
     private function validateRowIdx($rowIdx)
     {
-        if ($rowIdx < 0 || $rowIdx > self::MAX_EXCEL_2007_ROWS - 1) {
+        if ($rowIdx < 0 || $rowIdx > ExcelLimits::MAX_EXCEL_2007_ROW) {
             $msg = sprintf('Row index [%s] out of bonds.', $rowIdx);
-            throw new ExcelLimitException($msg);
+            throw new ExcelLimits($msg);
         }
     }
 
     /**
      * Validate excel columns limit
-     * @see http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
      *
      * @param $colIdx
-     * @throws ExcelLimitException
+     * @throws ExcelLimits
      */
     private function validateColumnIdx($colIdx)
     {
-        if ($colIdx < 0 || $colIdx > self::MAX_EXCEL_2007_COLUMNS - 1) {
+        if ($colIdx < 0 || $colIdx > ExcelLimits::MAX_EXCEL_2007_COLUMN) {
             $msg = sprintf('Column index [%s] out of bonds.', $colIdx);
-            throw new ExcelLimitException();
+            throw new ExcelLimits();
         }
     }
 

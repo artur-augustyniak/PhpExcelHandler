@@ -11,13 +11,25 @@ use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamWriterWrapper;
 abstract class XlsxEditor
 {
 
+
+    /**
+     * {$outputFileName}.xlsx or {$outputFileName}.pdf
+     * @var string
+     */
     protected $outputFileName = 'output_file';
+
     protected $writeAreaCol = 'A';
+
     protected $writeAreaRow = 0;
+
     protected $templatePath;
+
     protected $activeSheet;
+
     protected $dataSource;
+
     protected $phpExcel;
+
     private $phpExcelWriter;
 
     public function __construct()
@@ -36,7 +48,7 @@ abstract class XlsxEditor
      */
     protected function preGenerateHook()
     {
-        
+
     }
 
     private function initExcelWriterWithTemplate()

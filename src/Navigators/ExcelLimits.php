@@ -27,13 +27,21 @@ namespace Aaugustyniak\PhpExcelHandler\Navigators;
 use \Exception as Exception;
 
 /**
- * ExcelLimitException indicating coordinate out of excel bounds
+ * ExcelLimits indicating coordinate out of excel bounds
  *
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  * @package Aaugustyniak\PhpExcelHandler\Navigators
  */
-class ExcelLimitException extends Exception
+class ExcelLimits extends Exception
 {
+
+    /**
+     * Excel limits
+     * @see http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
+     */
+    const MAX_EXCEL_2007_COLUMN = 16383; //16384 -1
+    const MAX_EXCEL_2007_ROW = 1048575; //1048576 -1
+
     /**
      * Constructor with default values
      * @param string $message
