@@ -22,36 +22,15 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Navigators;
-
-use \Exception as Exception;
+namespace Aaugustyniak\PhpExcelHandler\Excel;
 
 /**
- * ExcelLimits indicating coordinate out of excel bounds
- *
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
- * @package Aaugustyniak\PhpExcelHandler\Navigators
  */
-class ExcelLimits extends Exception
+interface ReadDataCommand
 {
-
     /**
-     * Excel limits
-     * @see http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
+     * @return array
      */
-    const MAX_EXCEL_2007_COLUMN = 16383; //16384 -1
-    const MAX_EXCEL_2007_ROW = 1048575; //1048576 -1
-
-    /**
-     * Constructor with default values
-     * @param string $message
-     * @param int $code
-     * @param Exception $previous
-     */
-    public function __construct($message = "Given index out of bonds", $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-
-
+    public function read();
 }

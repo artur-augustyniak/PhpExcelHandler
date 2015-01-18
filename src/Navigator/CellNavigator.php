@@ -21,7 +21,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-namespace Aaugustyniak\PhpExcelHandler\Navigators;
+namespace Aaugustyniak\PhpExcelHandler\Navigator;
 
 
 /**
@@ -29,7 +29,7 @@ namespace Aaugustyniak\PhpExcelHandler\Navigators;
  * Excel cell addresses.
  *
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
- * @package Aaugustyniak\PhpExcelHandler\Navigators
+ * @package Aaugustyniak\PhpExcelHandler\Navigator
  */
 class CellNavigator
 {

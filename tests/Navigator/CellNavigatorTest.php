@@ -21,11 +21,11 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-namespace Aaugustyniak\PhpExcelHandler\Tests\Navigators;
+namespace Aaugustyniak\PhpExcelHandler\Tests\Navigator;
 
-use Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits;
+use Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits;
 use \PHPUnit_Framework_TestCase as TestCase;
-use Aaugustyniak\PhpExcelHandler\Navigators\CellNavigator;
+use Aaugustyniak\PhpExcelHandler\Navigator\CellNavigator;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
@@ -52,7 +52,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testNegativeRow()
     {
@@ -60,7 +60,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testExcelRowOverflow()
     {
@@ -80,7 +80,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testNegativeColumn()
     {
@@ -88,7 +88,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testExcelColumnOverflow()
     {
@@ -107,7 +107,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testExcelColumnOverflowInAddress()
     {
@@ -115,7 +115,7 @@ class CellNavigatorTest extends TestCase
     }
 
     /**
-     * @expectedException Aaugustyniak\PhpExcelHandler\Navigators\ExcelLimits
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Navigator\ExcelLimits
      */
     public function testExcelRowOverflowInAddress()
     {

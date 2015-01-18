@@ -21,24 +21,24 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-namespace Aaugustyniak\PhpExcelHandler\Tests\XlsxEditor;
 
-use \PHPUnit_Framework_TestCase as TestCase;
+namespace Aaugustyniak\PhpExcelHandler\Excel;
+
+use \Exception as Exception;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-class XlsxEditorTest extends TestCase
+class NoSuchElement extends Exception
 {
-
-    public function testNegativeColumn()
+    /**
+     * @param string $message
+     * @param int $code
+     * @param Exception $previous
+     */
+    public function __construct($message = "No such element", $code = 0, Exception $previous = null)
     {
-
+        parent::__construct($message, $code, $previous);
     }
 
-
-//    public function testIsFormattingCorrectly()
-//    {
-//
-//    }
 }
