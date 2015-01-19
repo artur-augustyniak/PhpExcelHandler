@@ -36,15 +36,15 @@ interface PHPExcelElementFactory
      */
     public function newPHPExcelObject();
 
+
+    /**
+     * @return \PHPExcel
+     */
+    public function newPHPExcelObjectFromFile($path);
+
     /**
      * @return \PHPExcel_Worksheet
      */
     public function newPHPExcelWorkSheetObject();
-
-    /**
-     * @return PHPExcelElementFactory
-     */
-    static public function getFactory();
-
 
 }

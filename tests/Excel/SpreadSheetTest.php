@@ -24,8 +24,10 @@
 namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 
 use \PHPUnit_Framework_TestCase as TestCase;
+use \Mockery as m;
 use Aaugustyniak\PhpExcelHandler\Excel\PHPExcelElementFactory;
 use Aaugustyniak\PhpExcelHandler\Excel\SpreadSheet;
+use Symfony\Component\Finder\Finder;
 
 
 class TestPhpExcelFactory implements PHPExcelElementFactory
@@ -47,12 +49,17 @@ class TestPhpExcelFactory implements PHPExcelElementFactory
         return new \PHPExcel_Worksheet();
     }
 
-    static public function getFactory()
+    /**
+     * @return \PHPExcel
+     */
+    public function newPHPExcelObjectFromFile($path)
     {
-        return new self;
+        $templateFileType = \PHPExcel_IOFactory::identify($path);
+        $excelTemplate = \PHPExcel_IOFactory::load($path);
+        $this->phpExcelWriter = \PHPExcel_IOFactory::createWriter($excelTemplate, $templateFileType);
+        //$this->phpExcelWriter->setPreCalculateFormulas(true);
+        return $this->phpExcelWriter->getPHPExcel();
     }
-
-
 }
 
 
@@ -62,18 +69,26 @@ class TestPhpExcelFactory implements PHPExcelElementFactory
 class SpreadSheetTest extends TestCase
 {
 
+    const TEST_FILE_NAME = "default";
     const DEF_WORKSHEET_NAME = 'Worksheet';
+    const DEF_FILE_NAME = "Workbook";
+
 
     /**
      * @var SpreadSheet
      */
     private $spreadSheet;
 
+
     protected function setUp()
     {
-        $phpExcelFactory = TestPhpExcelFactory::getFactory();
-        $this->spreadSheet = new SpreadSheet();
-        $this->spreadSheet->setElementFactory($phpExcelFactory);
+        $phpExcelFactory = new TestPhpExcelFactory();
+        $this->spreadSheet = new SpreadSheet($phpExcelFactory);
+    }
+
+    public function testCreatedSpreadSheetHasDefaultFileName()
+    {
+        $this->assertEquals(self::DEF_FILE_NAME, $this->spreadSheet->getFileName());
     }
 
     public function testCreatedSpreadSheetContainsSheetsWithTitles()
@@ -120,6 +135,50 @@ class SpreadSheetTest extends TestCase
         $this->assertEquals(self::DEF_WORKSHEET_NAME, $titles[0]);
         $this->assertEquals($newWorksheetTitle, $titles[1]);
         $this->assertEquals($newWorksheetTitle, $currentActiveSheet);
+    }
+
+    /**
+     * @expectedException \Aaugustyniak\PhpExcelHandler\Excel\NoSuchElement
+     */
+    public function testOpenNotExistingFile()
+    {
+        $this->spreadSheet->openFile("wrong.xlsx");
+    }
+
+
+    public function testOpeningFileResultsInProperInternalChanges()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        /**
+         * @see ../Assets/default.xlsx
+         */
+        $expectedTitles = array("TEST_1", "TEST_2", "TEST_3");
+        $actualTitles = $this->spreadSheet->getSheetTiles();
+        $expectedActiveSheet = "TEST_1";
+        $actualActiveSheet = $this->spreadSheet->getActiveSheet();
+        $this->assertEquals($expectedTitles, $actualTitles);
+        $this->assertEquals($expectedActiveSheet, $actualActiveSheet);
+        $this->assertEquals(self::TEST_FILE_NAME, $this->spreadSheet->getFileName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getTestFilePath()
+    {
+        $finder = new Finder();
+
+        $iterator = $finder
+            ->files()
+            ->name(self::TEST_FILE_NAME.'.xlsx')
+            ->depth(2)
+            ->in('.');
+        $testFilePath = "";
+        foreach ($iterator as $file) {
+            $testFilePath = $file->getRealpath();
+            break;
+        }
+        return $testFilePath;
     }
 
 

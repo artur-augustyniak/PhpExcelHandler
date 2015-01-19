@@ -28,6 +28,11 @@ use \PHPExcel as PHPExcel;
 use \Exception as Exception;
 
 /**
+ *
+ * @param $path
+ */
+
+/**
  * Excel spreadsheet abstraction
  * Facade for \PHPExcel
  *
@@ -59,28 +64,47 @@ class SpreadSheet
     private $excel;
 
     /**
-     *
-     * @param string $fileName
+     * @param PHPExcelElementFactory $elementFactory
      */
-    function __construct($fileName = self::DEF_FILE_NAME)
+    function __construct(PHPExcelElementFactory $elementFactory)
     {
-        $this->fileName = $fileName;
-        $this->elementFactory = DefaultPHPExcelElementFactory::getFactory();
+        $this->fileName = self::DEF_FILE_NAME;
+        $this->elementFactory = $elementFactory;
         $this->excel = $this->elementFactory->newPHPExcelObject();
     }
 
     /**
-     * @param PHPExcelElementFactory $elementFactory
+     * Get name of current file (without extension)
+     * @return string
      */
-    public function setElementFactory(PHPExcelElementFactory $elementFactory)
+    public function getFileName()
     {
-        $this->elementFactory = $elementFactory;
+        return $this->fileName;
     }
 
-
-    private function openFile($path)
+    /**
+     * Open file for edit
+     * @param $path
+     * @throws NoSuchElement
+     */
+    public function openFile($path)
     {
-        throw new NoSuchElement();
+        try {
+            $this->excel = $this->elementFactory->newPHPExcelObjectFromFile($path);
+            $this->fileName = $this->extractFileNameFromPath($path);
+        } catch (Exception $e) {
+            throw new NoSuchElement("No such file", $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Return file name without extension
+     * @param $path
+     * @return string
+     */
+    private function extractFileNameFromPath($path)
+    {
+        return basename($path, '.'.self::EXCEL_EXT);
     }
 
     /**
