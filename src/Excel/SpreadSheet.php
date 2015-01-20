@@ -24,6 +24,8 @@
 
 namespace Aaugustyniak\PhpExcelHandler\Excel;
 
+use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamResponse;
+use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamWriterWrapper;
 use \PHPExcel as PHPExcel;
 use \Exception as Exception;
 
@@ -64,6 +66,11 @@ class SpreadSheet
     private $excel;
 
     /**
+     * @var \PHPExcel_Writer_Excel2007
+     */
+    private $writer;
+
+    /**
      * @param PHPExcelElementFactory $elementFactory
      */
     function __construct(PHPExcelElementFactory $elementFactory)
@@ -71,6 +78,7 @@ class SpreadSheet
         $this->fileName = self::DEF_FILE_NAME;
         $this->elementFactory = $elementFactory;
         $this->excel = $this->elementFactory->newPHPExcelObject();
+        $this->writer = $this->elementFactory->newPHPExcelWriter();
     }
 
     /**
@@ -104,7 +112,7 @@ class SpreadSheet
      */
     private function extractFileNameFromPath($path)
     {
-        return basename($path, '.'.self::EXCEL_EXT);
+        return basename($path, '.' . self::EXCEL_EXT);
     }
 
     /**
@@ -171,35 +179,115 @@ class SpreadSheet
 
     }
 
-
+    /**
+     * Get raw excel file stream
+     *
+     * @return string
+     * @throws Exception
+     */
     public function getExcelStream()
     {
-
+        $output = null;
+        try {
+            $this->writer->setPHPExcel($this->excel);
+            \ob_start();
+            $this->writer->save('php://output');
+            $output = \ob_get_clean();
+        } catch (Exception $e) {
+            throw new Exception("Cannot write to php://output", $e->getCode(), $e);
+        }
+        return $output;
     }
 
+    /**
+     * * Get raw pdf file stream
+     *
+     * @return string
+     * @throws Exception
+     */
     public function getPdfStream()
     {
-
+        $output = null;
+        try {
+            $pdfWriter = $this->elementFactory->newPHPExcelPdfWriterFrom($this->excel);
+            \ob_start();
+            $pdfWriter->save('php://output');
+            $output = \ob_get_clean();
+        } catch (Exception $e) {
+            throw new Exception("Cannot write to php://output", $e->getCode(), $e);
+        }
+        return $output;
     }
 
+    /**
+     * * Get raw html file stream
+     *
+     * @return string
+     * @throws Exception
+     */
     public function getHtmlStream()
     {
-
+        $output = null;
+        try {
+            $pdfWriter = $this->elementFactory->newPHPExcelHtmlWriterFrom($this->excel);
+            \ob_start();
+            $pdfWriter->save('php://output');
+            $output = \ob_get_clean();
+        } catch (Exception $e) {
+            throw new Exception("Cannot write to php://output", $e->getCode(), $e);
+        }
+        return $output;
     }
 
+    /**
+     * @return StreamResponse
+     */
     public function getExcelResponse()
     {
-
+        $writerWrapper = new StreamWriterWrapper();
+        $writerWrapper->setWriter($this->elementFactory->newPHPExcelWriterFrom($this->excel), 'save');
+        $response = new StreamResponse($writerWrapper);
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set(
+            'Content-Disposition', sprintf('attachment;filename=%s.xlsx', $this->fileName)
+        );
+        // If you are using a https connection, you have to set those two headers for compatibility with IE <9
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        return $response;
     }
 
+    /**
+     * @return StreamResponse
+     */
     public function getPdfResponse()
     {
-
+        $writerWrapper = new StreamWriterWrapper();
+        $writerWrapper->setWriter($this->elementFactory->newPHPExcelPdfWriterFrom($this->excel), 'save');
+        $response = new StreamResponse($writerWrapper);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set(
+            'Content-Disposition', sprintf('attachment;filename=%s.pdf', $this->fileName)
+        );
+        // If you are using a https connection, you have to set those two headers for compatibility with IE <9
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        return $response;
     }
 
     public function getHtmlResponse()
     {
-
+        $writerWrapper = new StreamWriterWrapper();
+        $writerWrapper->setWriter($this->elementFactory->newPHPExcelHtmlWriterFrom($this->excel), 'save');
+        $response = new StreamResponse($writerWrapper);
+        $response->headers->set('Content-Type', 'text/html');
+        $response->headers->set(
+            'Content-Disposition', sprintf('attachment;filename=%s.html', $this->fileName)
+        );
+        // If you are using a https connection, you have to set those two headers for compatibility with IE <9
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        return $response;
     }
 
     public function saveExcel($path)

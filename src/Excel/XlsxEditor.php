@@ -94,10 +94,13 @@ abstract class XlsxEditor
         $writerWrapper->setWriter($this->phpExcelWriter, 'save');
         $response = new StreamResponse($writerWrapper);
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+
         $response->headers->set(
             'Content-Disposition', sprintf('attachment;filename=%s.xlsx', $this->outputFileName)
         );
+
         // If you are using a https connection, you have to set those two headers for compatibility with IE <9
+
         $response->headers->set('Pragma', 'public');
         $response->headers->set('Cache-Control', 'maxage=1');
         return $response;

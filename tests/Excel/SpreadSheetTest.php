@@ -23,6 +23,8 @@
 */
 namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 
+use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamResponse;
+use PHPExcel;
 use \PHPUnit_Framework_TestCase as TestCase;
 use \Mockery as m;
 use Aaugustyniak\PhpExcelHandler\Excel\PHPExcelElementFactory;
@@ -32,6 +34,16 @@ use Symfony\Component\Finder\Finder;
 
 class TestPhpExcelFactory implements PHPExcelElementFactory
 {
+    /**
+     * @TODO test/prod paths
+     */
+    function __construct()
+    {
+        $rendererName = \PHPExcel_Settings::PDF_RENDERER_TCPDF;
+        $rendererLibraryPath = __DIR__ . '/../../vendor/tecnick.com/tcpdf';
+        \PHPExcel_Settings::setPdfRenderer($rendererName, $rendererLibraryPath);
+    }
+
 
     /**
      * @return \PHPExcel
@@ -56,9 +68,42 @@ class TestPhpExcelFactory implements PHPExcelElementFactory
     {
         $templateFileType = \PHPExcel_IOFactory::identify($path);
         $excelTemplate = \PHPExcel_IOFactory::load($path);
-        $this->phpExcelWriter = \PHPExcel_IOFactory::createWriter($excelTemplate, $templateFileType);
+        $phpExcelWriter = \PHPExcel_IOFactory::createWriter($excelTemplate, $templateFileType);
         //$this->phpExcelWriter->setPreCalculateFormulas(true);
-        return $this->phpExcelWriter->getPHPExcel();
+        return $phpExcelWriter->getPHPExcel();
+    }
+
+    /**
+     * @return \PHPExcel_Writer_Excel2007
+     */
+    public function newPHPExcelWriter()
+    {
+        return new \PHPExcel_Writer_Excel2007();
+    }
+
+    /**
+     * @param \PHPExcel $pe
+     * @return \PHPExcel_Writer_PDF
+     */
+    public function newPHPExcelPdfWriterFrom(\PHPExcel $pe)
+    {
+        return new \PHPExcel_Writer_PDF($pe);
+    }
+
+    /**
+     * @return \PHPExcel_Writer_HTML
+     */
+    public function newPHPExcelHtmlWriterFrom(\PHPExcel $pe)
+    {
+        return new \PHPExcel_Writer_HTML($pe);
+    }
+
+    /**
+     * @return \PHPExcel_Writer_Excel2007
+     */
+    public function newPHPExcelWriterFrom(PHPExcel $pe)
+    {
+        return new \PHPExcel_Writer_Excel2007($pe);
     }
 }
 
@@ -164,13 +209,13 @@ class SpreadSheetTest extends TestCase
     /**
      * @return string
      */
-    public function getTestFilePath()
+    private function getTestFilePath()
     {
         $finder = new Finder();
 
         $iterator = $finder
             ->files()
-            ->name(self::TEST_FILE_NAME.'.xlsx')
+            ->name(self::TEST_FILE_NAME . '.xlsx')
             ->depth(2)
             ->in('.');
         $testFilePath = "";
@@ -179,6 +224,74 @@ class SpreadSheetTest extends TestCase
             break;
         }
         return $testFilePath;
+    }
+
+    public function testExcelOutputStream()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualStream = $this->spreadSheet->getExcelStream();
+        $this->assertContains('[Content_Types].xml͔]', $actualStream);
+    }
+
+    public function testPdfOutputStream()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualStream = $this->spreadSheet->getPdfStream();
+        $this->assertContains('%PDF-1.7', $actualStream);
+    }
+
+    public function testHtmlOutputStream()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualStream = $this->spreadSheet->getHtmlStream();
+        $this->assertContains('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+            $actualStream);
+    }
+
+    public function testExcelResponse()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualResponse = $this->spreadSheet->getExcelResponse();
+
+        $this->assertEquals('text/vnd.ms-excel; charset=utf-8', $actualResponse->headers->get('Content-Type'));
+        $this->assertEquals('attachment;filename=' . self::TEST_FILE_NAME . '.xlsx', $actualResponse->headers->get('Content-Disposition'));
+        $this->assertEquals('public', $actualResponse->headers->get('Pragma'));
+        $this->assertEquals('maxage=1, private', $actualResponse->headers->get('Cache-Control'));
+        \ob_start();
+        $actualResponse->sendContent();
+        $actualContent = \ob_get_clean();
+        $this->assertContains('[Content_Types].xml͔]', $actualContent);
+    }
+
+    public function testPdfResponse()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualResponse = $this->spreadSheet->getPdfResponse();
+
+        $this->assertEquals('application/pdf', $actualResponse->headers->get('Content-Type'));
+        $this->assertEquals('attachment;filename=' . self::TEST_FILE_NAME . '.pdf', $actualResponse->headers->get('Content-Disposition'));
+        $this->assertEquals('public', $actualResponse->headers->get('Pragma'));
+        $this->assertEquals('maxage=1, private', $actualResponse->headers->get('Cache-Control'));
+        \ob_start();
+        $actualResponse->sendContent();
+        $actualContent = \ob_get_clean();
+        $this->assertContains('%PDF-1.7', $actualContent);
+    }
+
+    public function testHtmlResponse()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $actualResponse = $this->spreadSheet->getHtmlResponse();
+
+        $this->assertEquals('text/html', $actualResponse->headers->get('Content-Type'));
+        $this->assertEquals('attachment;filename=' . self::TEST_FILE_NAME . '.html', $actualResponse->headers->get('Content-Disposition'));
+        $this->assertEquals('public', $actualResponse->headers->get('Pragma'));
+        $this->assertEquals('maxage=1, private', $actualResponse->headers->get('Cache-Control'));
+        \ob_start();
+        $actualResponse->sendContent();
+        $actualContent = \ob_get_clean();
+        $this->assertContains('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+            $actualContent);
     }
 
 
