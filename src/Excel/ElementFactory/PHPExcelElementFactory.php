@@ -22,15 +22,53 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel;
+namespace Aaugustyniak\PhpExcelHandler\Excel\ElementFactory;
+
+use \PHPExcel as PHPExcel;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-interface ModifyDataCommand
+interface PHPExcelElementFactory
 {
+
     /**
-     * @return void
+     * @return \PHPExcel
      */
-    public function modify();
+    public function newPHPExcelObject();
+
+
+    /**
+     * @return \PHPExcel
+     */
+    public function newPHPExcelObjectFromFile($path);
+
+    /**
+     * @return \PHPExcel_Worksheet
+     */
+    public function newPHPExcelWorkSheetObject();
+
+    /**
+     * @return \PHPExcel_Writer_Excel2007
+     */
+    public function newPHPExcelWriter();
+
+
+    /**
+     * @return \PHPExcel_Writer_Excel2007
+     */
+    public function newPHPExcelWriterFrom(PHPExcel $pe);
+
+
+    /**
+     * @return \PHPExcel_Writer_HTML
+     */
+    public function newPHPExcelHtmlWriterFrom(PHPExcel $pe);
+
+    /**
+     * @param PHPExcel $pe
+     * @return \PHPExcel_Writer_PDF
+     */
+    public function newPHPExcelPdfWriterFrom(PHPExcel $pe);
+
 }

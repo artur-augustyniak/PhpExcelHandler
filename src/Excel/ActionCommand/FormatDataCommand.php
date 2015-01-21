@@ -22,7 +22,9 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel;
+namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand;
+
+use \PHPExcel as PHPExcel;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
@@ -32,5 +34,5 @@ interface FormatDataCommand
     /**
      * @return void
      */
-    public function format();
+    public function format(PHPExcel $pe);
 }

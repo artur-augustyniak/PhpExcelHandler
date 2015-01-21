@@ -28,6 +28,10 @@ use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamResponse;
 use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamWriterWrapper;
 use \PHPExcel as PHPExcel;
 use \Exception as Exception;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\PHPExcelElementFactory;
 
 /**
  *
@@ -116,6 +120,41 @@ class SpreadSheet
     }
 
     /**
+     * Make workbook modifications provided by user implementation of
+     * ModifyDataCommand
+     *
+     * @param ModifyDataCommand $mdc
+     */
+    public function modify(ModifyDataCommand $mdc)
+    {
+        $mdc->modify($this->excel);
+    }
+
+    /**
+     * Scrap  workbook data using user strategy implemented by
+     * ReadDataCommand
+     *
+     * @param ReadDataCommand $rdc
+     * @return mixed
+     */
+    public function read(ReadDataCommand $rdc)
+    {
+        $rdc->readFrom($this->excel);
+        return $rdc->fetchData();
+    }
+
+    /**
+     * Format workbook/cells with strategy  provided by user implementation of
+     * FormatDataCommand
+     *
+     * @param FormatDataCommand $fdc
+     */
+    public function format(FormatDataCommand $fdc)
+    {
+        $fdc->format($this->excel);
+    }
+
+    /**
      * Get titles of sheets in current document
      * @return array
      */
@@ -162,22 +201,6 @@ class SpreadSheet
         return $this->excel->getActiveSheet()->getTitle();
     }
 
-
-    public function modify(ModifyDataCommand $mdc)
-    {
-
-    }
-
-    public function read(ReadDataCommand $rdc)
-    {
-
-    }
-
-
-    public function format(FormatDataCommand $fdc)
-    {
-
-    }
 
     /**
      * Get raw excel file stream
@@ -290,20 +313,49 @@ class SpreadSheet
         return $response;
     }
 
+    /**
+     * @param $path
+     * @throws Exception
+     */
     public function saveExcel($path)
     {
-
+        try {
+            $writer = $this->elementFactory->newPHPExcelWriterFrom($this->excel);
+            $writer->save($path);
+        } catch (Exception $e) {
+            $msg = sprintf("Cannot save file %s", $path);
+            throw new Exception($msg, $e->getCode(), $e);
+        }
     }
 
+    /**
+     * @param $path
+     * @throws Exception
+     */
     public function savePdf($path)
     {
-
+        try {
+            $writer = $this->elementFactory->newPHPExcelPdfWriterFrom($this->excel);
+            $writer->save($path);
+        } catch (Exception $e) {
+            $msg = sprintf("Cannot save file %s", $path);
+            throw new Exception($msg, $e->getCode(), $e);
+        }
     }
 
-
+    /**
+     * @param $path
+     * @throws Exception
+     */
     public function saveHtml($path)
     {
-
+        try {
+            $writer = $this->elementFactory->newPHPExcelHtmlWriterFrom($this->excel);
+            $writer->save($path);
+        } catch (Exception $e) {
+            $msg = sprintf("Cannot save file %s", $path);
+            throw new Exception($msg, $e->getCode(), $e);
+        }
     }
 
 

@@ -22,53 +22,41 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel;
+namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand;
 
 use \PHPExcel as PHPExcel;
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-interface PHPExcelElementFactory
+interface ReadDataCommand
 {
+    /**
+     *
+     * @return array
+     */
+    public function readFrom(PHPExcel $pe);
 
     /**
-     * @return \PHPExcel
+     * @return mixed
      */
-    public function newPHPExcelObject();
+    public function fetchData();
 
-
-    /**
-     * @return \PHPExcel
-     */
-    public function newPHPExcelObjectFromFile($path);
-
-    /**
-     * @return \PHPExcel_Worksheet
-     */
-    public function newPHPExcelWorkSheetObject();
-
-    /**
-     * @return \PHPExcel_Writer_Excel2007
-     */
-    public function newPHPExcelWriter();
-
-
-    /**
-     * @return \PHPExcel_Writer_Excel2007
-     */
-    public function newPHPExcelWriterFrom(PHPExcel $pe);
-
-
-    /**
-     * @return \PHPExcel_Writer_HTML
-     */
-    public function newPHPExcelHtmlWriterFrom(PHPExcel $pe);
-
-    /**
-     * @param PHPExcel $pe
-     * @return \PHPExcel_Writer_PDF
-     */
-    public function newPHPExcelPdfWriterFrom(PHPExcel $pe);
 
 }
+
+
+//class ArrayXlsxEditor extends XlsxEditor {
+//
+//    public function writeFromDataSource() {
+//        $i = 1;
+//        foreach ($this->dataSource as $k => $v) {
+//            $keyCellCoord = 'A' . $i;
+//            $varCellCoord = 'B' . $i;
+//            $this->activeSheet->setCellValue($keyCellCoord, $k);
+//            $this->activeSheet->setCellValue($varCellCoord, $v);
+//            $i++;
+//        }
+//    }
+//
+//}

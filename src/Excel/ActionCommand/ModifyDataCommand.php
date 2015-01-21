@@ -22,15 +22,17 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel;
+namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand;
 
+use \PHPExcel as PHPExcel;
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-interface ReadDataCommand
+interface ModifyDataCommand
 {
+
     /**
-     * @return array
+     * @return void
      */
-    public function read();
+    public function modify(PHPExcel $pe);
 }

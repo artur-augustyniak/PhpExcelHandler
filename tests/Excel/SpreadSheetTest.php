@@ -23,11 +23,10 @@
 */
 namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 
-use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamResponse;
+
 use PHPExcel;
 use \PHPUnit_Framework_TestCase as TestCase;
-use \Mockery as m;
-use Aaugustyniak\PhpExcelHandler\Excel\PHPExcelElementFactory;
+use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\PHPExcelElementFactory;
 use Aaugustyniak\PhpExcelHandler\Excel\SpreadSheet;
 use Symfony\Component\Finder\Finder;
 
@@ -125,8 +124,12 @@ class SpreadSheetTest extends TestCase
     private $spreadSheet;
 
 
+    private $systemTmp;
+
+
     protected function setUp()
     {
+        $this->systemTmp = \sys_get_temp_dir();
         $phpExcelFactory = new TestPhpExcelFactory();
         $this->spreadSheet = new SpreadSheet($phpExcelFactory);
     }
@@ -292,6 +295,65 @@ class SpreadSheetTest extends TestCase
         $actualContent = \ob_get_clean();
         $this->assertContains('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
             $actualContent);
+    }
+
+
+    public function testSaveExcel()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $outputFilePath = $this->systemTmp . DIRECTORY_SEPARATOR . self::DEF_FILE_NAME . '.' . SpreadSheet::EXCEL_EXT;
+        $this->spreadSheet->saveExcel($outputFilePath);
+        $savedFile = file_get_contents($outputFilePath);
+        $this->assertContains('[Content_Types].xml͔]', $savedFile);
+        unlink($outputFilePath);
+    }
+
+
+    public function testSavePdf()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $outputFilePath = $this->systemTmp . DIRECTORY_SEPARATOR . self::DEF_FILE_NAME . '.' . SpreadSheet::PDF_EXT;
+        $this->spreadSheet->savePdf($outputFilePath);
+        $savedFile = file_get_contents($outputFilePath);
+        $this->assertContains('%PDF-1.7', $savedFile);
+        unlink($outputFilePath);
+    }
+
+
+    public function testSaveHtml()
+    {
+        $this->spreadSheet->openFile($this->getTestFilePath());
+        $outputFilePath = $this->systemTmp . DIRECTORY_SEPARATOR . self::DEF_FILE_NAME . '.' . SpreadSheet::HTML_EXT;
+        $this->spreadSheet->saveHtml($outputFilePath);
+        $savedFile = file_get_contents($outputFilePath);
+        $this->assertContains('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+            $savedFile);
+        unlink($outputFilePath);
+    }
+
+
+    public function testModify()
+    {
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand');
+        $commandMock->expects($this->once())->method('modify');
+        $this->spreadSheet->modify($commandMock);
+
+    }
+
+    public function testFormat()
+    {
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand');
+        $commandMock->expects($this->once())->method('format');
+        $this->spreadSheet->format($commandMock);
+    }
+
+
+    public function testReadData()
+    {
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand');
+        $commandMock->expects($this->once())->method('readFrom');
+        $commandMock->expects($this->once())->method('fetchData');
+        $this->spreadSheet->read($commandMock);
     }
 
 
