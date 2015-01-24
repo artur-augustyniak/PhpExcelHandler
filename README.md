@@ -26,46 +26,24 @@ If you don’t have Composer yet, you should [get it](http://getcomposer.org) no
 3. And use:
 
 ```php
-  class WriteTabularCommandTest extends TestCase
-  {
-      /**
-       * @var SpreadSheet
-       */
-      private $spreadSheet;
-  
-      /**
-       * @var WriteAnchorGuesser
-       */
-      private $anchorGuesser;
-  
-      /**
-       * @var array
-       */
-      private $data;
-  
-  
-      protected function setUp()
-      {
-          $phpExcelFactory = new DefaultPhpExcelFactory();
-          $this->spreadSheet = new SpreadSheet($phpExcelFactory);
-          $this->data = array(
-              array("Column1", "Column2", "Column3"),
-              array(1001, 2001, 3001),
-              array(4001, 5001, 6001),
-              array(7001, 8001, 9001),
-          );
-          $this->anchorGuesser = new WriteAnchorGuesser($this->data);
-          $this->anchorGuesser->forceFixIndexing();
-      }
-  
-  
-      public function testReadModifiedData()
-      {
-          $writer = new WriteTabularCommand($this->anchorGuesser);
-          $this->spreadSheet->modify($writer);
-  
-          $reader = new ReadTabularCommand($this->anchorGuesser);
-          $readData = $this->spreadSheet->read($reader);
-          $this->assertEquals($this->data, $readData);
-      }
+require_once "vendor/autoload.php";
+
+$data = array(
+            array("Column1", "Column2", "Column3"),
+            array(1001, 2001, 3001),
+            array(4001, 5001, 6001),
+            array(7001, 8001, 9001),
+        );
+
+
+$phpExcelFactory = new DefaultPhpExcelFactory();
+$spreadSheet = new SpreadSheet($phpExcelFactory);
+
+$anchorGuesser = new WriteAnchorGuesser($data);
+
+$writer = new WriteTabularCommand($anchorGuesser);
+$spreadSheet->modify($writer);
+$outputHtml = $spreadSheet->getHtmlStream();
+echo $outputHtml;
+
 
