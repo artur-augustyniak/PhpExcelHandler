@@ -24,16 +24,16 @@
 
 namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic;
 
-use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\Color;
 use Aaugustyniak\PhpExcelHandler\Navigator\MatrixWalker;
 use Aaugustyniak\PhpExcelHandler\Navigator\WriteAnchorGuesser;
 use \PHPExcel as PHPExcel;
 
-
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-class WriteTabularCommand extends MatrixWalker implements ModifyDataCommand
+class FormatTabularCommand extends MatrixWalker implements FormatDataCommand
 {
 
     /**
@@ -45,24 +45,51 @@ class WriteTabularCommand extends MatrixWalker implements ModifyDataCommand
     }
 
 
-    /**
-     * @param PHPExcel $pe
-     */
-    public function modify(PHPExcel $pe)
+    public function format(PHPExcel $pe)
     {
         $this->walk($pe);
     }
 
-    /**
-     * @param $row
-     * @param $col
-     * @param $val
-     */
     public function actOnCell($row, $col, $val)
     {
-        $cellAddress = $this->navigator->getAddressFor($col, $row);
-        $this->excel->getActiveSheet()->setCellValue($cellAddress, $val);
+        $styleArray = array(
+            'fill' => array(
+                'type' => \PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array('rgb' => $this->getColorFor($row))
+            ),
+            'borders' => array(
+                'top' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN
+                ),
+                'bottom' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN
+                ),
+                'left' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN
+                ),
+                'right' => array(
+                    'style' => \PHPExcel_Style_Border::BORDER_THIN
+                ),
+            )
+        );
+        $address = $this->navigator->getAddressFor($col, $row);
+        $this->excel->getActiveSheet()->getStyle($address)->applyFromArray($styleArray);
 
     }
 
+    /**
+     * Color for odd-even rows and header
+     * @param $row
+     * @return mixed
+     */
+    public function getColorFor($row)
+    {
+        if (0 != $row && 0 != $row % 2) {
+            return Color::rgb(Color::LightBlue);
+        } elseif (0 == $row) {
+            return Color::rgb(Color::LightGreen);
+        } else {
+            return Color::rgb(Color::LightGray);
+        }
+    }
 }

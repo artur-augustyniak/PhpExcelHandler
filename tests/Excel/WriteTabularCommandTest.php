@@ -24,7 +24,10 @@
 namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 
 
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\FormatTabularCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\ReadTabularCommand;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\WriteTabularCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\Color;
 use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\DefaultPhpExcelFactory;
 use Aaugustyniak\PhpExcelHandler\Excel\SpreadSheet;
 use Aaugustyniak\PhpExcelHandler\Navigator\WriteAnchorGuesser;
@@ -40,36 +43,67 @@ class WriteTabularCommandTest extends TestCase
      */
     private $spreadSheet;
 
+    /**
+     * @var WriteAnchorGuesser
+     */
     private $anchorGuesser;
 
     /**
-     * @var string
+     * @var array
      */
-    private $systemTmp;
+    private $data;
 
 
     protected function setUp()
     {
-        $this->systemTmp = \sys_get_temp_dir();
         $phpExcelFactory = new DefaultPhpExcelFactory();
         $this->spreadSheet = new SpreadSheet($phpExcelFactory);
-        $data = array(
+        $this->data = array(
             array("Column1", "Column2", "Column3"),
-            array(1, 2, 3),
-            array(4, 5, 6),
-            array(7, 8, 9),
+            array(1001, 2001, 3001),
+            array(4001, 5001, 6001),
+            array(7001, 8001, 9001),
         );
-        $this->anchorGuesser = new WriteAnchorGuesser($data);
+        $this->anchorGuesser = new WriteAnchorGuesser($this->data);
         $this->anchorGuesser->forceFixIndexing();
     }
 
-    public function testMatrixDump()
-    {
 
+    public function testReadModifiedData()
+    {
         $writer = new WriteTabularCommand($this->anchorGuesser);
         $this->spreadSheet->modify($writer);
-        $this->spreadSheet->saveHtml(__DIR__ . '/test.html');
+
+        $reader = new ReadTabularCommand($this->anchorGuesser);
+        $readData = $this->spreadSheet->read($reader);
+        $this->assertEquals($this->data, $readData);
+    }
+
+    public function testSaveModifiedData()
+    {
+        $writer = new WriteTabularCommand($this->anchorGuesser);
+        $this->spreadSheet->modify($writer);
+        $outputHtml = $this->spreadSheet->getHtmlStream();
+        foreach ($this->data as $row) {
+            foreach ($row as $val) {
+                $this->assertContains((string)$val, $outputHtml);
+            }
+
+        }
     }
 
 
+    public function testModifiedDataFormat()
+    {
+        $writer = new WriteTabularCommand($this->anchorGuesser);
+        $this->spreadSheet->modify($writer);
+
+        $formatter = new FormatTabularCommand($this->anchorGuesser);
+        $this->spreadSheet->format($formatter);
+
+        $outputHtml = $this->spreadSheet->getHtmlStream();
+        foreach ($this->data as $k => $row) {
+            $this->assertContains($formatter->getColorFor($k), $outputHtml);
+        }
+    }
 }

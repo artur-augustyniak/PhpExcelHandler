@@ -24,7 +24,7 @@
 
 namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic;
 
-use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand;
+use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand;
 use Aaugustyniak\PhpExcelHandler\Navigator\MatrixWalker;
 use Aaugustyniak\PhpExcelHandler\Navigator\WriteAnchorGuesser;
 use \PHPExcel as PHPExcel;
@@ -33,8 +33,10 @@ use \PHPExcel as PHPExcel;
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-class WriteTabularCommand extends MatrixWalker implements ModifyDataCommand
+class ReadTabularCommand extends MatrixWalker implements ReadDataCommand
 {
+
+    private $data = array();
 
     /**
      * @param WriteAnchorGuesser $guesser
@@ -44,25 +46,33 @@ class WriteTabularCommand extends MatrixWalker implements ModifyDataCommand
         parent::__construct($guesser);
     }
 
+    /**
+     * @param $row
+     * @param $col
+     * @param $val
+     * @throws \PHPExcel_Exception
+     */
+    public function actOnCell($row, $col, $val)
+    {
+        $cellAddress = $this->navigator->getAddressFor($col, $row);
+        $cellValue = $this->excel->getActiveSheet()->getCell($cellAddress)->getValue();
+        $this->data[$row][$col] = $cellValue;
+    }
 
     /**
-     * @param PHPExcel $pe
+     *
+     * @return array
      */
-    public function modify(PHPExcel $pe)
+    public function readFrom(PHPExcel $pe)
     {
         $this->walk($pe);
     }
 
     /**
-     * @param $row
-     * @param $col
-     * @param $val
+     * @return mixed
      */
-    public function actOnCell($row, $col, $val)
+    public function fetchData()
     {
-        $cellAddress = $this->navigator->getAddressFor($col, $row);
-        $this->excel->getActiveSheet()->setCellValue($cellAddress, $val);
-
+        return $this->data;
     }
-
 }

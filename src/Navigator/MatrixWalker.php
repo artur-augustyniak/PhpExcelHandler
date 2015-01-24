@@ -22,47 +22,76 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic;
+namespace Aaugustyniak\PhpExcelHandler\Navigator;
 
-use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand;
-use Aaugustyniak\PhpExcelHandler\Navigator\MatrixWalker;
-use Aaugustyniak\PhpExcelHandler\Navigator\WriteAnchorGuesser;
 use \PHPExcel as PHPExcel;
-
 
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-class WriteTabularCommand extends MatrixWalker implements ModifyDataCommand
+abstract class MatrixWalker
 {
+    /**
+     * @var array
+     */
+    protected $payload;
+
+    /**
+     * @var WriteAnchorGuesser
+     */
+    protected $guesser;
+
+    /**
+     * @var PHPExcel
+     */
+    protected $excel;
+
+    /**
+     * @var CellNavigator
+     */
+    protected $navigator;
 
     /**
      * @param WriteAnchorGuesser $guesser
      */
     function __construct(WriteAnchorGuesser $guesser)
     {
-        parent::__construct($guesser);
+        $this->guesser = $guesser;
+        $this->navigator = $guesser->getNavigator();
+        $this->payload = $guesser->getPayload();
     }
 
 
     /**
      * @param PHPExcel $pe
      */
-    public function modify(PHPExcel $pe)
+    public function walk(PHPExcel $pe)
     {
-        $this->walk($pe);
+        $this->excel = $pe;
+        $baseColIdx = $this->guesser->getColumnFromPayload();
+        $rowIdx = $this->guesser->getRowFromPayload();
+        foreach ($this->payload as $row) {
+            if (is_array($row)) {
+                $colIdx = $baseColIdx;
+                foreach ($row as $cellValue) {
+                    $this->actOnCell($rowIdx, $colIdx, $cellValue);
+                    $colIdx++;
+                }
+            } else {
+                $this->actOnCell($rowIdx, 0, $row);
+            }
+            $rowIdx++;
+        }
     }
 
     /**
+     * User defined work on cell
+     *
      * @param $row
      * @param $col
      * @param $val
+     * @return mixed
      */
-    public function actOnCell($row, $col, $val)
-    {
-        $cellAddress = $this->navigator->getAddressFor($col, $row);
-        $this->excel->getActiveSheet()->setCellValue($cellAddress, $val);
-
-    }
+    abstract public function actOnCell($row, $col, $val);
 
 }
