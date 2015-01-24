@@ -24,87 +24,11 @@
 namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 
 
-use PHPExcel;
+use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\DefaultPhpExcelFactory;
 use \PHPUnit_Framework_TestCase as TestCase;
-use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\PHPExcelElementFactory;
+
 use Aaugustyniak\PhpExcelHandler\Excel\SpreadSheet;
 use Symfony\Component\Finder\Finder;
-
-
-class TestPhpExcelFactory implements PHPExcelElementFactory
-{
-    /**
-     * @TODO test/prod paths
-     */
-    function __construct()
-    {
-        $rendererName = \PHPExcel_Settings::PDF_RENDERER_TCPDF;
-        $rendererLibraryPath = __DIR__ . '/../../vendor/tecnick.com/tcpdf';
-        \PHPExcel_Settings::setPdfRenderer($rendererName, $rendererLibraryPath);
-    }
-
-
-    /**
-     * @return \PHPExcel
-     */
-    public function newPHPExcelObject()
-    {
-        return new \PHPExcel();
-    }
-
-    /**
-     * @return \PHPExcel_Worksheet
-     */
-    public function newPHPExcelWorkSheetObject()
-    {
-        return new \PHPExcel_Worksheet();
-    }
-
-    /**
-     * @return \PHPExcel
-     */
-    public function newPHPExcelObjectFromFile($path)
-    {
-        $templateFileType = \PHPExcel_IOFactory::identify($path);
-        $excelTemplate = \PHPExcel_IOFactory::load($path);
-        $phpExcelWriter = \PHPExcel_IOFactory::createWriter($excelTemplate, $templateFileType);
-        //$this->phpExcelWriter->setPreCalculateFormulas(true);
-        return $phpExcelWriter->getPHPExcel();
-    }
-
-    /**
-     * @return \PHPExcel_Writer_Excel2007
-     */
-    public function newPHPExcelWriter()
-    {
-        return new \PHPExcel_Writer_Excel2007();
-    }
-
-    /**
-     * @param \PHPExcel $pe
-     * @return \PHPExcel_Writer_PDF
-     */
-    public function newPHPExcelPdfWriterFrom(\PHPExcel $pe)
-    {
-        return new \PHPExcel_Writer_PDF($pe);
-    }
-
-    /**
-     * @return \PHPExcel_Writer_HTML
-     */
-    public function newPHPExcelHtmlWriterFrom(\PHPExcel $pe)
-    {
-        return new \PHPExcel_Writer_HTML($pe);
-    }
-
-    /**
-     * @return \PHPExcel_Writer_Excel2007
-     */
-    public function newPHPExcelWriterFrom(PHPExcel $pe)
-    {
-        return new \PHPExcel_Writer_Excel2007($pe);
-    }
-}
 
 
 /**
@@ -123,14 +47,16 @@ class SpreadSheetTest extends TestCase
      */
     private $spreadSheet;
 
-
+    /**
+     * @var string
+     */
     private $systemTmp;
 
 
     protected function setUp()
     {
         $this->systemTmp = \sys_get_temp_dir();
-        $phpExcelFactory = new TestPhpExcelFactory();
+        $phpExcelFactory = new DefaultPhpExcelFactory();
         $this->spreadSheet = new SpreadSheet($phpExcelFactory);
     }
 
