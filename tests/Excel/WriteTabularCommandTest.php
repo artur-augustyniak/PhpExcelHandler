@@ -27,7 +27,6 @@ namespace Aaugustyniak\PhpExcelHandler\Tests\Excel;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\FormatTabularCommand;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\ReadTabularCommand;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\Basic\WriteTabularCommand;
-use Aaugustyniak\PhpExcelHandler\Excel\Color;
 use Aaugustyniak\PhpExcelHandler\Excel\ElementFactory\DefaultPhpExcelFactory;
 use Aaugustyniak\PhpExcelHandler\Excel\SpreadSheet;
 use Aaugustyniak\PhpExcelHandler\Navigator\WriteAnchorGuesser;

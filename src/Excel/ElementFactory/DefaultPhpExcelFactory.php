@@ -24,20 +24,46 @@
 
 namespace Aaugustyniak\PhpExcelHandler\Excel\ElementFactory;
 
+use Aaugustyniak\PhpExcelHandler\Excel\NoSuchElement;
+use Composer\Autoload\ClassLoader;
+
 /**
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
 class DefaultPhpExcelFactory implements PHPExcelElementFactory
 {
-    /**
-     * @TODO test/prod paths
-     */
+
     function __construct()
     {
-        $rendererName = \PHPExcel_Settings::PDF_RENDERER_TCPDF;
-        $rendererLibraryPath = __DIR__ . '/../../../vendor/tecnick.com/tcpdf';
+        /**
+         * @var ClassLoader
+         */
+        $loader = $this->getLoader();
+        $rendererPath = dirname($loader->findFile('\TCPDF'));
+        $this->setPdfRendererPath($rendererPath);
+    }
 
-        \PHPExcel_Settings::setPdfRenderer($rendererName, $rendererLibraryPath);
+    /**
+     * @param $path
+     */
+    public function setPdfRendererPath($path)
+    {
+        $rendererName = \PHPExcel_Settings::PDF_RENDERER_TCPDF;
+        \PHPExcel_Settings::setPdfRenderer($rendererName, $path);
+    }
+
+
+    private function getLoader()
+    {
+        foreach (spl_autoload_functions() as $func) {
+            if (is_array($func) && isset($func[1]) && $func[1] == 'loadClass') {
+                return $func[0];
+            }
+        }
+        $msg = sprintf("Can't find autoloader, please use %s via istance of class %s",
+            'setPdfRendererPath($path)',
+            __CLASS__);
+        throw new NoSuchElement($msg);
     }
 
 
@@ -65,7 +91,7 @@ class DefaultPhpExcelFactory implements PHPExcelElementFactory
         $templateFileType = \PHPExcel_IOFactory::identify($path);
         $excelTemplate = \PHPExcel_IOFactory::load($path);
         $phpExcelWriter = \PHPExcel_IOFactory::createWriter($excelTemplate, $templateFileType);
-        //$this->phpExcelWriter->setPreCalculateFormulas(true);
+        $phpExcelWriter->setPreCalculateFormulas(true);
         return $phpExcelWriter->getPHPExcel();
     }
 
