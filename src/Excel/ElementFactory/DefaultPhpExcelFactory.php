@@ -25,6 +25,7 @@
 namespace Aaugustyniak\PhpExcelHandler\Excel\ElementFactory;
 
 use Aaugustyniak\PhpExcelHandler\Excel\NoSuchElement;
+use Aaugustyniak\PhpExcelHandler\Excel\WriterWrapper;
 use Composer\Autoload\ClassLoader;
 
 /**
@@ -95,36 +96,29 @@ class DefaultPhpExcelFactory implements PHPExcelElementFactory
         return $phpExcelWriter->getPHPExcel();
     }
 
-    /**
-     * @return \PHPExcel_Writer_Excel2007
-     */
-    public function newPHPExcelWriter()
-    {
-        return new \PHPExcel_Writer_Excel2007();
-    }
 
     /**
      * @param \PHPExcel $pe
-     * @return \PHPExcel_Writer_PDF
+     * @return WriterWrapper
      */
     public function newPHPExcelPdfWriterFrom(\PHPExcel $pe)
     {
-        return new \PHPExcel_Writer_PDF($pe);
+        return new WriterWrapper(new \PHPExcel_Writer_PDF($pe));
     }
 
     /**
-     * @return \PHPExcel_Writer_HTML
+     * @return WriterWrapper
      */
     public function newPHPExcelHtmlWriterFrom(\PHPExcel $pe)
     {
-        return new \PHPExcel_Writer_HTML($pe);
+        return new WriterWrapper( new  \PHPExcel_Writer_HTML($pe));
     }
 
     /**
-     * @return \PHPExcel_Writer_Excel2007
+     * @return WriterWrapper
      */
     public function newPHPExcelWriterFrom(\PHPExcel $pe)
     {
-        return new \PHPExcel_Writer_Excel2007($pe);
+        return new WriterWrapper(new \PHPExcel_Writer_Excel2007($pe));
     }
 }

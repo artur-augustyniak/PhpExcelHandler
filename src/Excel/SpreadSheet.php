@@ -28,6 +28,7 @@ use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamResponse;
 use n3b\Bundle\Util\HttpFoundation\StreamResponse\StreamWriterWrapper;
 use \PHPExcel as PHPExcel;
 use \Exception as Exception;
+use \PHPExcel_Writer_Abstract as AbstractWriter;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand;
 use Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand;
@@ -82,7 +83,7 @@ class SpreadSheet
         $this->fileName = self::DEF_FILE_NAME;
         $this->elementFactory = $elementFactory;
         $this->excel = $this->elementFactory->newPHPExcelObject();
-        $this->writer = $this->elementFactory->newPHPExcelWriter();
+        $this->writer = $this->elementFactory->newPHPExcelWriterFrom($this->excel);
     }
 
     /**
@@ -212,9 +213,9 @@ class SpreadSheet
     {
         $output = null;
         try {
-            $this->writer->setPHPExcel($this->excel);
+            $excelWriter = $this->elementFactory->newPHPExcelWriterFrom($this->excel);
             \ob_start();
-            $this->writer->save('php://output');
+            $excelWriter->save('php://output');
             $output = \ob_get_clean();
         } catch (Exception $e) {
             throw new Exception("Cannot write to php://output", $e->getCode(), $e);
@@ -319,13 +320,8 @@ class SpreadSheet
      */
     public function saveExcel($path)
     {
-        try {
-            $writer = $this->elementFactory->newPHPExcelWriterFrom($this->excel);
-            $writer->save($path);
-        } catch (Exception $e) {
-            $msg = sprintf("Cannot save file %s", $path);
-            throw new Exception($msg, $e->getCode(), $e);
-        }
+        $writer = $this->elementFactory->newPHPExcelWriterFrom($this->excel);
+        $this->saveOn($path, $writer);
     }
 
     /**
@@ -334,13 +330,8 @@ class SpreadSheet
      */
     public function savePdf($path)
     {
-        try {
-            $writer = $this->elementFactory->newPHPExcelPdfWriterFrom($this->excel);
-            $writer->save($path);
-        } catch (Exception $e) {
-            $msg = sprintf("Cannot save file %s", $path);
-            throw new Exception($msg, $e->getCode(), $e);
-        }
+        $writer = $this->elementFactory->newPHPExcelPdfWriterFrom($this->excel);
+        $this->saveOn($path, $writer);
     }
 
     /**
@@ -349,8 +340,19 @@ class SpreadSheet
      */
     public function saveHtml($path)
     {
+        $writer = $this->elementFactory->newPHPExcelHtmlWriterFrom($this->excel);
+        $this->saveOn($path, $writer);
+    }
+
+    /**
+     *
+     * @param $path
+     * @param WriterWrapper $writer
+     * @throws Exception
+     */
+    private function saveOn($path, WriterWrapper $writer)
+    {
         try {
-            $writer = $this->elementFactory->newPHPExcelHtmlWriterFrom($this->excel);
             $writer->save($path);
         } catch (Exception $e) {
             $msg = sprintf("Cannot save file %s", $path);

@@ -22,48 +22,33 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Aaugustyniak\PhpExcelHandler\Excel\ElementFactory;
+namespace Aaugustyniak\PhpExcelHandler\Excel;
 
-use Aaugustyniak\PhpExcelHandler\Excel\WriterWrapper;
-use \PHPExcel as PHPExcel;
 
 /**
+ * Excel spreadsheet abstraction
+ * Facade for \PHPExcel
+ *
  * @author Artur Augustyniak <artur@aaugustyniak.pl>
  */
-interface PHPExcelElementFactory
+class WriterWrapper
 {
 
-    /**
-     * @return \PHPExcel
-     */
-    public function newPHPExcelObject();
+    private $writer;
 
-
-    /**
-     * @return \PHPExcel
-     */
-    public function newPHPExcelObjectFromFile($path);
+    function __construct($writer)
+    {
+        $this->writer = $writer;
+    }
 
     /**
-     * @return \PHPExcel_Worksheet
+     * @param $path
      */
-    public function newPHPExcelWorkSheetObject();
-
-    /**
-     * @return WriterWrapper
-     */
-    public function newPHPExcelWriterFrom(PHPExcel $pe);
+    public function save($path)
+    {
+        $this->writer->save($path);
+    }
 
 
-    /**
-     * @return WriterWrapper
-     */
-    public function newPHPExcelHtmlWriterFrom(PHPExcel $pe);
-
-    /**
-     * @param PHPExcel $pe
-     * @return WriterWrapper
-     */
-    public function newPHPExcelPdfWriterFrom(PHPExcel $pe);
 
 }
