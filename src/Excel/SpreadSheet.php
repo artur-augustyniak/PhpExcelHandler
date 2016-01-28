@@ -96,6 +96,15 @@ class SpreadSheet
     }
 
     /**
+     * Output file name without extension
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
      * Open file for edit
      * @param $path
      * @throws NoSuchElement
