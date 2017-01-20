@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/artur-augustyniak/PhpExcelHandler.svg?branch=master)](https://travis-ci.org/artur-augustyniak/PhpExcelHandler)
 # API for simplified PhpExcel navigation and generating reports.
 
 # PhpExcelHandler
