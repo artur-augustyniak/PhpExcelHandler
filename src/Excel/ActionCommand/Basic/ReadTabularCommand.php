@@ -50,6 +50,7 @@ class ReadTabularCommand extends MatrixWalker implements ReadDataCommand
      * @param $row
      * @param $col
      * @param $val
+     * @return mixed|void
      * @throws \PHPExcel_Exception
      */
     public function actOnCell($row, $col, $val)
