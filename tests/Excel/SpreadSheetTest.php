@@ -157,7 +157,6 @@ class SpreadSheetTest extends TestCase
 
     public function testExcelOutputStream()
     {
-        $this->markTestSkipped("travis stream fail");
         $this->spreadSheet->openFile($this->getTestFilePath());
         $actualStream = $this->spreadSheet->getExcelStream();
         $this->assertContains('[Content_Types].xml͔]', $actualStream);
@@ -165,7 +164,6 @@ class SpreadSheetTest extends TestCase
 
     public function testPdfOutputStream()
     {
-        $this->markTestSkipped("travis stream fail");
         $this->spreadSheet->openFile($this->getTestFilePath());
         $actualStream = $this->spreadSheet->getPdfStream();
         $this->assertContains('%PDF-1.7', $actualStream);
@@ -173,7 +171,6 @@ class SpreadSheetTest extends TestCase
 
     public function testHtmlOutputStream()
     {
-        $this->markTestSkipped("travis stream fail");
         $this->spreadSheet->openFile($this->getTestFilePath());
         $actualStream = $this->spreadSheet->getHtmlStream();
         $this->assertContains('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
@@ -263,7 +260,7 @@ class SpreadSheetTest extends TestCase
 
     public function testModify()
     {
-        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand');
+        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand');
         $commandMock->expects($this->once())->method('modify');
         $this->spreadSheet->modify($commandMock);
 
@@ -271,7 +268,7 @@ class SpreadSheetTest extends TestCase
 
     public function testFormat()
     {
-        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand');
+        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand');
         $commandMock->expects($this->once())->method('format');
         $this->spreadSheet->format($commandMock);
     }
@@ -279,7 +276,7 @@ class SpreadSheetTest extends TestCase
 
     public function testReadData()
     {
-        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand');
+        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand');
         $commandMock->expects($this->once())->method('readFrom');
         $commandMock->expects($this->once())->method('fetchData');
         $this->spreadSheet->read($commandMock);

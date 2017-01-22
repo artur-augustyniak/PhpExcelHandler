@@ -40,7 +40,7 @@ class DefaultPhpExcelFactory implements PHPExcelElementFactory
          * @var ClassLoader
          */
         $loader = $this->getLoader();
-        $rendererPath = dirname($loader->findFile('\TCPDF'));
+        $rendererPath = dirname($loader->findFile('TCPDF'));
         $this->setPdfRendererPath($rendererPath);
     }
 
