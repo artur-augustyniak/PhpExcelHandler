@@ -260,7 +260,7 @@ class SpreadSheetTest extends TestCase
 
     public function testModify()
     {
-        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand');
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ModifyDataCommand');
         $commandMock->expects($this->once())->method('modify');
         $this->spreadSheet->modify($commandMock);
 
@@ -268,7 +268,7 @@ class SpreadSheetTest extends TestCase
 
     public function testFormat()
     {
-        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand');
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\FormatDataCommand');
         $commandMock->expects($this->once())->method('format');
         $this->spreadSheet->format($commandMock);
     }
@@ -276,7 +276,7 @@ class SpreadSheetTest extends TestCase
 
     public function testReadData()
     {
-        $commandMock = $this->createMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand');
+        $commandMock = $this->getMock('Aaugustyniak\PhpExcelHandler\Excel\ActionCommand\ReadDataCommand');
         $commandMock->expects($this->once())->method('readFrom');
         $commandMock->expects($this->once())->method('fetchData');
         $this->spreadSheet->read($commandMock);
